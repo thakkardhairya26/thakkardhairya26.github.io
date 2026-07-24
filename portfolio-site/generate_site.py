@@ -1,4 +1,5 @@
 from pathlib import Path
+import argparse
 import pymupdf  # PyMuPDF
 from PIL import Image
 import shutil
@@ -25,7 +26,7 @@ LANDING_PAGE = ROOT / "index.html"
 
 
 # Render quality
-DPI_SCALE = 2.2
+DPI_SCALE = 300 / 72
 
 
 # ============================
@@ -40,12 +41,13 @@ def clean_directory(path: Path):
 
 def convert_pdf_to_images(pdf_path: Path, output_dir: Path):
     """
-    Convert PDF pages into optimized WebP images.
+    Convert PDF pages into lossless WebP images.
     """
 
     print(f"Converting {pdf_path.name}...")
 
     pdf = pymupdf.open(pdf_path)
+    output_page_number = 1
 
     for i, page in enumerate(pdf):
 
@@ -65,12 +67,23 @@ def convert_pdf_to_images(pdf_path: Path, output_dir: Path):
             pix.samples
         )
 
-        img.save(
-            image_path,
-            "WEBP",
-            quality=85,
-            method=6
-        )
+        page_images = [img]
+        if pix.width > pix.height * 1.2:
+            midpoint = img.width // 2
+            page_images = [
+                img.crop((0, 0, midpoint, img.height)),
+                img.crop((midpoint, 0, img.width, img.height))
+            ]
+
+        for page_image in page_images:
+            image_path = output_dir / f"{output_page_number:03}.webp"
+            page_image.save(
+                image_path,
+                "WEBP",
+                lossless=True,
+                method=6
+            )
+            output_page_number += 1
 
         print(
             f"  page {i+1}/{len(pdf)}"
@@ -127,8 +140,15 @@ body {{
 
 
 #toolbar {{
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
     color:white;
-    margin-bottom:20px;
+    padding:4px;
+    border-radius:8px;
+    background:rgba(17,17,17,.9);
 }}
 
 
@@ -143,6 +163,18 @@ button {{
 
 #flipbook {{
     background:white;
+}}
+
+
+#pdf-viewer {{
+    display:none;
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    border:0;
+    background:white;
+    z-index:10;
 }}
 
 
@@ -166,8 +198,17 @@ button {{
 </button>
 
 
-<a href="../assets/Portfolio_Dhairya_Thakkar.pdf"
-target="_blank">
+<button onclick="showFlipbook()">
+Flipbook
+</button>
+
+<button onclick="showPdfViewer()">
+PDF viewer
+</button>
+
+<a href="../assets/Dhairya_Thakkar_Portfolio.pdf"
+target="_blank"
+download>
 
 <button>
 Download PDF
@@ -180,6 +221,13 @@ Download PDF
 
 
 <div id="flipbook"></div>
+
+
+<iframe
+id="pdf-viewer"
+src="../assets/Dhairya_Thakkar_Portfolio.pdf"
+title="Dhairya Thakkar portfolio PDF">
+</iframe>
 
 
 
@@ -222,6 +270,18 @@ mobileScrollSupport:false
 
 
 pageFlip.loadFromImages(images);
+
+function showFlipbook() {{
+     document.getElementById("flipbook").style.display = "block";
+     document.getElementById("pdf-viewer").style.display = "none";
+}}
+
+
+function showPdfViewer() {{
+     document.getElementById("flipbook").style.display = "none";
+     document.getElementById("pdf-viewer").style.display = "block";
+}}
+
 
 
 
@@ -474,6 +534,16 @@ Open Portfolio
 
 def main():
 
+    parser = argparse.ArgumentParser(
+        description="Generate the portfolio site."
+    )
+    parser.add_argument(
+        "--update-webp",
+        action="store_true",
+        help="Regenerate the portfolio page images from the source PDF."
+    )
+    args = parser.parse_args()
+
     if not CV_FILE.exists():
         raise FileNotFoundError(
             f"Missing {CV_FILE}"
@@ -485,15 +555,18 @@ def main():
         )
 
 
-    clean_directory(OUTPUT)
+    OUTPUT.mkdir(exist_ok=True)
 
-    PAGES.mkdir()
-
-
-    convert_pdf_to_images(
-        PORTFOLIO_FILE,
-        PAGES
-    )
+    if args.update_webp:
+        clean_directory(PAGES)
+        convert_pdf_to_images(
+            PORTFOLIO_FILE,
+            PAGES
+        )
+    elif not any(PAGES.glob("*.webp")):
+        raise FileNotFoundError(
+            "No portfolio WebP pages found. Run with --update-webp first."
+        )
 
 
     generate_portfolio_html()

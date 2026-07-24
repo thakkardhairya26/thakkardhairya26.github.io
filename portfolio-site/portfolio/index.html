@@ -27,8 +27,15 @@ body {
 
 
 #toolbar {
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
     color:white;
-    margin-bottom:20px;
+    padding:4px;
+    border-radius:8px;
+    background:rgba(17,17,17,.9);
 }
 
 
@@ -43,6 +50,18 @@ button {
 
 #flipbook {
     background:white;
+}
+
+
+#pdf-viewer {
+    display:none;
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    border:0;
+    background:white;
+    z-index:10;
 }
 
 
@@ -66,8 +85,17 @@ button {
 </button>
 
 
-<a href="../assets/Portfolio_Dhairya_Thakkar.pdf"
-target="_blank">
+<button onclick="showFlipbook()">
+Flipbook
+</button>
+
+<button onclick="showPdfViewer()">
+PDF viewer
+</button>
+
+<a href="../assets/Dhairya_Thakkar_Portfolio.pdf"
+target="_blank"
+download>
 
 <button>
 Download PDF
@@ -80,6 +108,13 @@ Download PDF
 
 
 <div id="flipbook"></div>
+
+
+<iframe
+id="pdf-viewer"
+src="../assets/Dhairya_Thakkar_Portfolio.pdf"
+title="Dhairya Thakkar portfolio PDF">
+</iframe>
 
 
 
@@ -112,7 +147,30 @@ const images = [
 "pages/022.webp",
 "pages/023.webp",
 "pages/024.webp",
-"pages/025.webp"
+"pages/025.webp",
+"pages/026.webp",
+"pages/027.webp",
+"pages/028.webp",
+"pages/029.webp",
+"pages/030.webp",
+"pages/031.webp",
+"pages/032.webp",
+"pages/033.webp",
+"pages/034.webp",
+"pages/035.webp",
+"pages/036.webp",
+"pages/037.webp",
+"pages/038.webp",
+"pages/039.webp",
+"pages/040.webp",
+"pages/041.webp",
+"pages/042.webp",
+"pages/043.webp",
+"pages/044.webp",
+"pages/045.webp",
+"pages/046.webp",
+"pages/047.webp",
+"pages/048.webp"
 
 ];
 
@@ -146,6 +204,18 @@ mobileScrollSupport:false
 
 
 pageFlip.loadFromImages(images);
+
+function showFlipbook() {
+     document.getElementById("flipbook").style.display = "block";
+     document.getElementById("pdf-viewer").style.display = "none";
+}
+
+
+function showPdfViewer() {
+     document.getElementById("flipbook").style.display = "none";
+     document.getElementById("pdf-viewer").style.display = "block";
+}
+
 
 
 
