@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Dhairya Thakkar Portfolio</title>
+
+
+<style>
+
+body {
+    margin:0;
+    background:#111;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-family:Arial, sans-serif;
+}
+
+
+#toolbar {
+    color:white;
+    margin-bottom:20px;
+}
+
+
+button {
+    padding:10px 18px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    margin:5px;
+}
+
+
+#flipbook {
+    background:white;
+}
+
+
+</style>
+
+
+<script src="https://unpkg.com/page-flip/dist/js/page-flip.browser.js">
+</script>
+
+
+</head>
+
+
+<body>
+
+
+<div id="toolbar">
+
+<button onclick="location.href='../index.html'">
+← Back
+</button>
+
+
+<a href="../assets/Portfolio_Dhairya_Thakkar.pdf"
+target="_blank">
+
+<button>
+Download PDF
+</button>
+
+</a>
+
+</div>
+
+
+
+<div id="flipbook"></div>
+
+
+
+<script>
+
+
+const images = [
+
+"pages/001.webp",
+"pages/002.webp",
+"pages/003.webp",
+"pages/004.webp",
+"pages/005.webp",
+"pages/006.webp",
+"pages/007.webp",
+"pages/008.webp",
+"pages/009.webp",
+"pages/010.webp",
+"pages/011.webp",
+"pages/012.webp",
+"pages/013.webp",
+"pages/014.webp",
+"pages/015.webp",
+"pages/016.webp",
+"pages/017.webp",
+"pages/018.webp",
+"pages/019.webp",
+"pages/020.webp",
+"pages/021.webp",
+"pages/022.webp",
+"pages/023.webp",
+"pages/024.webp",
+"pages/025.webp"
+
+];
+
+
+const pageFlip = new St.PageFlip(
+
+document.getElementById("flipbook"),
+
+{
+
+width:600,
+height:850,
+
+size:"stretch",
+
+minWidth:315,
+maxWidth:1000,
+
+minHeight:420,
+maxHeight:1350,
+
+
+showCover:true,
+
+mobileScrollSupport:false
+
+}
+
+);
+
+
+
+pageFlip.loadFromImages(images);
+
+
+
+document.addEventListener(
+"keydown",
+(e)=>{
+
+if(e.key==="ArrowRight")
+    pageFlip.flipNext();
+
+
+if(e.key==="ArrowLeft")
+    pageFlip.flipPrev();
+
+}
+);
+
+
+</script>
+
+
+</body>
+
+</html>
